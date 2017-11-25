@@ -14,8 +14,6 @@ INSERT INTO lists (list_name ,list_background_color)
 			('health','indigo'),
 			('hobbies','violet');
 
-SELECT * FROM lists ORDER BY id;
-
 Create TABLE groceries (
 	id SERIAL PRIMARY KEY,
 	item VARCHAR(35),
@@ -26,3 +24,25 @@ INSERT INTO groceries (item,quantity)
 			('bananas',10),
 			('crabs',4),
 			('dog food',1);
+			
+Create TABLE school (
+	id SERIAL PRIMARY KEY,
+	due_date DATE,
+	assignments VARCHAR(35),
+	notes VARCHAR(300));
+	
+INSERT INTO school (due_date,assignments,notes)
+	VALUES	('2017-11-27','TODO App','Weekend Challenge 3'),
+			('2017-11-28','LinkedIn Part1','Update Contact Info, Summary, Experience, Education'),
+			('2017-11-29','Classroom Norms','Preparation for Class discussion');
+			
+Create TABLE work (
+	id SERIAL PRIMARY KEY,
+	due_date DATE,
+	tasks VARCHAR(100),
+	notes VARCHAR(300));
+
+INSERT INTO work (due_date,tasks,notes) VALUES	
+	('2017-11-27','Crush enemies','Very Important'),
+	('2017-11-28','See enemies driven before me','Use cavalry'),
+	('2017-11-29','Hear the lamentations of their women!','Conan the Barbarian is a good movie');
