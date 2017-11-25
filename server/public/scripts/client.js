@@ -145,7 +145,7 @@ function appendTableTooListDiv() {
             var currentColumn = currentTable.columnNames[columnNameIndex];
             console.log(currentColumn);
             var trAppendItem = '';
-            trAppendItem += '<td>' + currentTable.tableData[trIndex].currentColumn + '</td>'
+            trAppendItem += '<td>' + currentTable.tableData[trIndex][currentColumn] + '</td>'
             $('#tr' + currentTable.is + currentTable.tableData[trIndex].id).append(trAppendItem);
         }
 
