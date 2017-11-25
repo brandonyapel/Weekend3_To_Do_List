@@ -1,0 +1,25 @@
+{
+  "name": "weekend3_to_do_list",
+  "version": "1.0.0",
+  "description": "To Do List App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandonyapel/Weekend3_To_Do_List.git"
+  },
+  "author": "Brandon Yapel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brandonyapel/Weekend3_To_Do_List/issues"
+  },
+  "homepage": "https://github.com/brandonyapel/Weekend3_To_Do_List#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "jquery": "^3.2.1",
+    "pg": "^7.4.0"
+  }
+}
