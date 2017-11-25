@@ -8,11 +8,17 @@ var bodyParser = require('body-parser');
 //sets port to 5000
 var port = 5000;
 
+//require in routes
+var allLists = require('./routes/allLists.js');
+
 //Makes body Parser work
 app.use(bodyParser.urlencoded({ extended: true}));
 
 //links blank url to our public directory and displays index.html
 app.use(express.static('server/public'));
+
+//url routes
+app.use('/allLists',allLists);
 
 
 
