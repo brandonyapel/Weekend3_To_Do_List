@@ -15,8 +15,8 @@ function readyNow() {
 };
 
 //global variables for functions
-var currentTable = {is: 'N/A'}
-var currentTableColumnNames = []
+var currentTable = { is: 'N/A', columnNames: [], tableData: [] };
+
 
 
 function getAllLists() {
@@ -29,7 +29,8 @@ function getAllLists() {
             $('main').empty();
             for (let listsIndex = 0; listsIndex < response.length; listsIndex++) {
                 var listDivToAppend = '';
-                listDivToAppend += '<div class = "listDiv"';
+                listDivToAppend += '<div class = "listDiv"'
+                listDivToAppend += 'id = "div' + response[listsIndex].list_name + '"';
                 listDivToAppend += 'style="background-color:' + response[listsIndex].list_background_color + '">';
                 listDivToAppend += '<h2 class = "listTitle">';
                 listDivToAppend += response[listsIndex].list_name;
@@ -62,12 +63,12 @@ function listDivClick() {
             height: "+=440px",
             width: "+=440px"
         });//end animate
-        postCurrentTable();
+        postCurrentTableForColumns();
         //ajax request to get column names of table
     }
 };
 
-function postCurrentTable () {
+function postCurrentTableForColumns() {
     $.ajax({
         method: 'POST',
         url: '/columnNames/currentTable',
@@ -81,14 +82,72 @@ function postCurrentTable () {
 
 
 
-function getColumnNames () {
-    currentTableColumnNames = [];
+function getColumnNames() {
+    currentTable.columnNames = [];
     $.ajax({
         method: 'GET',
         url: '/columnNames',
         success: function (response) {
             console.log(response);
-            currentTable.columnNames = response;
+            for (let columnNameIndex = 0; columnNameIndex < response.length; columnNameIndex++) {
+                currentTable.columnNames.push(response[columnNameIndex].column_name);
+            }
+            postCurrentTableForList();
         }
     })
+}
+
+
+
+function postCurrentTableForList() {
+    $.ajax({
+        method: 'POST',
+        url: '/list/currentTable',
+        data: currentTable,
+        success: function (response) {
+            console.log(response);
+            getTableData()
+        }
+    })
+}
+
+function getTableData() {
+    $.ajax({
+        method: 'GET',
+        url: '/list',
+        success: function (response) {
+            console.log(response);
+            currentTable.tableData = response
+            appendTableTooListDiv();
+        }
+    })
+}
+
+function appendTableTooListDiv() {
+    var table = '<table id = "table' + currentTable.is + '"></table>'
+    var thead = '<thead id = "thead' + currentTable.is + '"></thead>'
+    var tbody = '<tbody id = "tbody' + currentTable.is + '"></tbody>'
+    $('#div' + currentTable.is).append(table);
+    $('#table' + currentTable.is).append(thead);
+    $('#table' + currentTable.is).append(tbody);
+    theadtr= '<tr id = "theadtr'+currentTable.is+'">'+'</tr>';
+    $('#thead' + currentTable.is).append(theadtr)
+    for (let thIndex = 1; thIndex < currentTable.columnNames.length; thIndex++) {
+        var theadAppendItem = '';
+        theadAppendItem += '<th>' + currentTable.columnNames[thIndex] + '</th>'
+        $('#theadtr'+currentTable.is).append(theadAppendItem);
+    };
+    for (let trIndex = 0; trIndex < currentTable.tableData.length; trIndex++) {
+        var tbodyAppendItem = '';
+        tbodyAppendItem += '<tr id = "tr' + currentTable.is + currentTable.tableData[trIndex].id + '"></tr>';
+        $('#tbody'+currentTable.is).append(tbodyAppendItem);
+        for (let columnNameIndex = 1; columnNameIndex < currentTable.columnNames.length; columnNameIndex++) {
+            var currentColumn = currentTable.columnNames[columnNameIndex];
+            console.log(currentColumn);
+            var trAppendItem = '';
+            trAppendItem += '<td>' + currentTable.tableData[trIndex].currentColumn + '</td>'
+            $('#tr' + currentTable.is + currentTable.tableData[trIndex].id).append(trAppendItem);
+        }
+
+    }
 }

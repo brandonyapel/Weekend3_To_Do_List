@@ -11,6 +11,7 @@ var port = 5000;
 //require in routes
 var allLists = require('./routes/allLists.js');
 var columnNames = require('./routes/columnNames');
+var list = require('./routes/list');
 
 //Makes body Parser work
 app.use(bodyParser.urlencoded({ extended: true}));
@@ -21,6 +22,7 @@ app.use(express.static('server/public'));
 //url routes
 app.use('/allLists',allLists);
 app.use('/columnNames',columnNames);
+app.use('/list',list)
 
 
 app.listen(port,function(){
