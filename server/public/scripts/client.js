@@ -16,20 +16,21 @@ function readyNow() {
     $('main').on('click', '.addListItemButton', addListItem);
     $('main').on('click', '.insertListItem', insertListItem);
     $('main').on('click', '.cancelListItem', cancelListItem);
-
-
-
+    $('main').on('click', '#createNewList', createNewList);
+    $('main').on('click', '#submitNewList', submitNewList);
 };
 
 //global variables for functions
 var currentTable = { is: '', columnNames: [], tableData: [], newItem: [] };
 var checkbox;
 var deleteButton;
-var lineItem = { completionStatus: '' }
+var lineItem = { completionStatus: '' };
+var newList = {list_name: '',list_background_color: ''};
 
 
 
 function getAllLists() {
+    $('main').empty();
     console.log('getAllLists()')
     $.ajax({
         method: 'GET',
@@ -49,7 +50,7 @@ function getAllLists() {
                 $('main').append(listDivToAppend);
             };//end for loop
             var listDivToAppend = '';
-            listDivToAppend += '<div class = "listDiv"';
+            listDivToAppend += '<div class = "createNewListDiv" id = "createNewList"';
             listDivToAppend += 'style="background-color:grey">';
             listDivToAppend += '<h2 class = "listTitle">';
             listDivToAppend += 'Create New List';
@@ -61,6 +62,7 @@ function getAllLists() {
 }//end getAllLists()
 
 function listDivClick() {
+    resetCreateDiv()
     listDivHeight = $(this).height()
     if (listDivHeight == 200) {
         refreshBoxes();
@@ -154,7 +156,7 @@ function appendTableTooListDiv() {
     $('#theadtr' + currentTable.is).append('<th>x</th>');
     for (let trIndex = 0; trIndex < currentTable.tableData.length; trIndex++) {
         var tbodyAppendItem = '';
-        tbodyAppendItem += '<tr data-index="'+trIndex+'" id = "tr' + currentTable.is + currentTable.tableData[trIndex].id + '"></tr>';
+        tbodyAppendItem += '<tr data-index="' + trIndex + '" id = "tr' + currentTable.is + currentTable.tableData[trIndex].id + '"></tr>';
         $('#tbody' + currentTable.is).append(tbodyAppendItem);
         if (currentTable.tableData[trIndex].completion_status == 'n') {
             checkbox = '<td><input data-id="' + currentTable.tableData[trIndex].id + '" class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
@@ -198,15 +200,17 @@ function deleteListItem() {
         var listItemToRemove = $(this).data().id;
         console.log('deleteListItem was clicked! The list item id was', listItemToRemove);
         $(this).closest('tr').fadeOut(1000)
-        setTimeOut(function(){$.ajax({
-            method: 'DELETE',
-            url: '/list/' + listItemToRemove,
-            success: function (response) {
-                refreshBoxes();
-                getTableData();
-            }
-        })}
-    , 1000);
+        setTimeOut(function () {
+            $.ajax({
+                method: 'DELETE',
+                url: '/list/' + listItemToRemove,
+                success: function (response) {
+                    refreshBoxes();
+                    getTableData();
+                }
+            })
+        }
+            , 1000);
     }
 }
 
@@ -324,3 +328,74 @@ function pastDueCSS() {
     }
 };
 
+function createNewList() {
+    var createDivHeight = $(this).height()
+    if (createDivHeight == 200) {
+        refreshBoxes();
+        currentTable.is = $(this).find($('h2')).text();
+        $('.listDiv').animate({
+            height: "200px",
+            width: "200px"
+        });
+        //enlarges div to size to see all fields of table
+        $(this).animate({
+            height: "+=440px",
+            width: "+=440px"
+        });//end animate
+        var CSS_COLOR_NAMES = ["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "Beige", "Bisque", "Black", "BlanchedAlmond", "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue", "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenRod", "DarkGray", "DarkGrey", "DarkGreen", "DarkKhaki", "DarkMagenta", "DarkOliveGreen", "Darkorange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkSlateGrey", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DimGrey", "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "GoldenRod", "Gray", "Grey", "Green", "GreenYellow", "HoneyDew", "HotPink", "IndianRed", "Indigo", "Ivory", "Khaki", "Lavender", "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenRodYellow", "LightGray", "LightGrey", "LightGreen", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray", "LightSlateGrey", "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquaMarine", "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen", "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite", "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenRod", "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "SeaShell", "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "SlateGrey", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"];
+        console.log(CSS_COLOR_NAMES.length)
+        var createNewListForm = '';
+        createNewListForm += '<h4>List Name:</h4>';
+        createNewListForm += '<input id=inputNewList type="text" placeholder="New List Name">'
+        createNewListForm +='<p>*lowercase, no spaces, no special characters</p>'
+        createNewListForm += '<br>'
+        createNewListForm += '<h4>List Color:</h4>';
+        createNewListForm += '<select id="selectColor">'
+        for (let colorIndex = 0; colorIndex < CSS_COLOR_NAMES.length; colorIndex++) {
+            createNewListForm += '<option value="' + CSS_COLOR_NAMES[colorIndex] + '">' + CSS_COLOR_NAMES[colorIndex] + '</option>'
+        }
+        createNewListForm += '</select>'
+        createNewListForm += '<br><br>'
+        createNewListForm += '<button id="submitNewList">Create New List</button>';
+
+        $(this).append(createNewListForm);
+
+    }
+
+}
+
+
+function submitNewList() {
+    newList.list_name = $('#inputNewList').val();
+    newList.list_background_color = $('#selectColor').val()
+    console.log(newList);
+    $.ajax({
+        method: 'POST',
+        url: '/allLists',
+        data: newList,
+        success: function (response) {
+            console.log('response', response);
+            $.ajax({
+                method: 'POST',
+                url: '/allLists/create',
+                data: newList,
+                success: function (response) {
+                    console.log('response', response);
+                    getAllLists();
+                }
+            });
+        }
+    });
+    
+}
+
+function resetCreateDiv() {
+    $('#inputNewList').remove();
+    $('#selectColor').remove();
+    $('#submitNewList').remove()
+
+    $('#createNewList').animate({
+        height: "200px",
+        width: "200px"
+    });
+}
