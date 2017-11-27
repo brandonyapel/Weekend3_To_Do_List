@@ -25,7 +25,7 @@ function readyNow() {
 var currentTable = { is: '', columnNames: [], tableData: [], newItem: [] };
 var checkbox;
 var deleteButton;
-var lineItem = {completionStatus: ''}
+var lineItem = { completionStatus: '' }
 
 
 
@@ -154,12 +154,12 @@ function appendTableTooListDiv() {
     $('#theadtr' + currentTable.is).append('<th>x</th>');
     for (let trIndex = 0; trIndex < currentTable.tableData.length; trIndex++) {
         var tbodyAppendItem = '';
-        tbodyAppendItem += '<tr id = "tr' + currentTable.is + currentTable.tableData[trIndex].id + '"></tr>';
+        tbodyAppendItem += '<tr data-index="'+trIndex+'" id = "tr' + currentTable.is + currentTable.tableData[trIndex].id + '"></tr>';
         $('#tbody' + currentTable.is).append(tbodyAppendItem);
-        if(currentTable.tableData[trIndex].completion_status=='n'){
-            checkbox = '<td><input data-id="'+currentTable.tableData[trIndex].id+'" class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
-        }else if(currentTable.tableData[trIndex].completion_status=='y'){
-            checkbox = '<td><input checked data-id="'+currentTable.tableData[trIndex].id+'" class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
+        if (currentTable.tableData[trIndex].completion_status == 'n') {
+            checkbox = '<td><input data-id="' + currentTable.tableData[trIndex].id + '" class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
+        } else if (currentTable.tableData[trIndex].completion_status == 'y') {
+            checkbox = '<td><input checked data-id="' + currentTable.tableData[trIndex].id + '" class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
         }
         $('#tr' + currentTable.is + currentTable.tableData[trIndex].id).append(checkbox)
         for (let columnNameIndex = 2; columnNameIndex < currentTable.columnNames.length; columnNameIndex++) {
@@ -184,7 +184,8 @@ function appendTableTooListDiv() {
     tableFooter += '</tr>';
     tableFooter += '<tfoot>';
     $('#table' + currentTable.is).append(tableFooter);
-    submitChecks();  
+    completionCSS();
+    submitChecks();
 };
 
 function refreshBoxes() {
@@ -192,18 +193,21 @@ function refreshBoxes() {
 };
 
 function deleteListItem() {
-    console.log($(this).data());
-    var listItemToRemove = $(this).data().id;
-    console.log('deleteListItem was clicked! The list item id was', listItemToRemove);
-
-    $.ajax({
-        method: 'DELETE',
-        url: '/list/' + listItemToRemove,
-        success: function (response) {
-            refreshBoxes();
-            getTableData();
-        }
-    });
+    if (confirm('Are you sure you want to delete this Item') == true) {
+        console.log($(this).data());
+        var listItemToRemove = $(this).data().id;
+        console.log('deleteListItem was clicked! The list item id was', listItemToRemove);
+        $(this).closest('tr').fadeOut(1000)
+        setTimeOut(function(){$.ajax({
+            method: 'DELETE',
+            url: '/list/' + listItemToRemove,
+            success: function (response) {
+                refreshBoxes();
+                getTableData();
+            }
+        })}
+    , 1000);
+    }
 }
 
 function addListItem() {
@@ -242,7 +246,7 @@ function insertListItem() {
     numberOfInputs = currentTable.columnNames.length
     currentTable.newItem = [];
     for (let inputIndex = 2; inputIndex < currentTable.columnNames.length; inputIndex++) {
-        var $currentInput = '#input'+currentTable.is+inputIndex;
+        var $currentInput = '#input' + currentTable.is + inputIndex;
         currentTable.newItem.push($($currentInput).val());
     }
     console.log(currentTable.newItem)
@@ -258,17 +262,17 @@ function insertListItem() {
 }
 
 
-function cancelListItem () {
+function cancelListItem() {
     refreshBoxes();
     getTableData();
 };
 
-function submitChecks () {
-    
-    $('input[type="checkbox"]').click(function(){
-        if($(this).is(":checked")){
+function submitChecks() {
+
+    $('input[type="checkbox"]').click(function () {
+        if ($(this).is(":checked")) {
             alert("Checkbox is checked.");
-            console.log($(this).data()); 
+            console.log($(this).data());
             var itemIDToCheck = $(this).data().id;
             console.log('Check Box Checked! The item id was', itemIDToCheck);
             lineItem.completionStatus = 'y'
@@ -280,11 +284,11 @@ function submitChecks () {
                     cancelListItem();
                 }
             })
-        
+
         }
-        else if($(this).is(":not(:checked)")){
+        else if ($(this).is(":not(:checked)")) {
             alert("Checkbox is unchecked.");
-            console.log($(this).data()); 
+            console.log($(this).data());
             var itemIDToCheck = $(this).data().id;
             console.log('Check Box Checked! The item id was', itemIDToCheck);
             lineItem.completionStatus = 'n'
@@ -300,5 +304,23 @@ function submitChecks () {
     });
 };
 
+function completionCSS() {
+    for (let completionIndex = 0; completionIndex < currentTable.tableData.length; completionIndex++) {
+        if (currentTable.tableData[completionIndex].completion_status == 'y') {
+            $('#tr' + currentTable.is + currentTable.tableData[completionIndex].id).css('color', 'green');
+            $('#tr' + currentTable.is + currentTable.tableData[completionIndex].id).css('background-color', 'lightgreen');
+        }
 
-    
+    }
+}
+
+function pastDueCSS() {
+    for (let pastDueIndex = 0; pastDueIndex < currentTable.tableData.length; pastDueIndex++) {
+        if (currentTable.tableData[pastDueIndex].due_date < Date()) {
+            $('#tr' + currentTable.is + currentTable.tableData[pastDueIndex].id).css('color', 'red');
+            $('#tr' + currentTable.is + currentTable.tableData[pastDueIndex].id).css('background-color', 'lightred');
+        }
+
+    }
+};
+

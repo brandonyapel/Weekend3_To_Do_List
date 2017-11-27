@@ -26,7 +26,7 @@ router.get('/', function (req, res) {
         } else {
             // We connected to the database!!!
             // Now, we're going to GET things from thd DB
-            client.query(`SELECT * FROM ${currentTable.is};`,
+            client.query(`SELECT * FROM ${currentTable.is} ORDER BY completion_status,id;`,
                             function (errorMakingQuery, result) {
                 done();
                 if (errorMakingQuery) {
