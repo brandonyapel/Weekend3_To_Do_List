@@ -18,6 +18,7 @@ function readyNow() {
     $('main').on('click', '.cancelListItem', cancelListItem);
     $('main').on('click', '#createNewList', createNewList);
     $('main').on('click', '#submitNewList', submitNewList);
+    $('main').on('click', '.deleteList', deleteList);
 };
 
 //global variables for functions
@@ -26,6 +27,7 @@ var checkbox;
 var deleteButton;
 var lineItem = { completionStatus: '' };
 var newList = {list_name: '',list_background_color: ''};
+var allLists = [];
 
 
 
@@ -36,12 +38,15 @@ function getAllLists() {
         method: 'GET',
         url: '/allLists',
         success: function (response) {
+            allLists = response;
             console.log('response', response);
             $('main').empty();
             for (let listsIndex = 0; listsIndex < response.length; listsIndex++) {
                 var listDivToAppend = '';
                 listDivToAppend += '<div class = "listDiv"'
-                listDivToAppend += 'id = "div' + response[listsIndex].list_name + '"';
+                listDivToAppend += 'data-id ="' + response[listsIndex].id + '" ';
+                listDivToAppend += 'data-name ="' + response[listsIndex].list_name + '" ';
+                listDivToAppend += 'id = "div' + response[listsIndex].list_name + '" ';
                 listDivToAppend += 'style="background-color:' + response[listsIndex].list_background_color + '">';
                 listDivToAppend += '<h2 class = "listTitle">';
                 listDivToAppend += response[listsIndex].list_name;
@@ -181,8 +186,8 @@ function appendTableTooListDiv() {
     tableFooter += '<tr>';
     tableFooter += '<td colspan="' + columnSpan + '">';
     tableFooter += '<button class = "addListItemButton" id = "addItem' + currentTable.is + '">add to list</button>'
-    tableFooter += '<button>delete list</button>';
-    tableFooter += '<button>minimize list</button></td>';
+    tableFooter += '<button class = "deleteList">delete list</button>';
+    tableFooter += '</td>';
     tableFooter += '</tr>';
     tableFooter += '<tfoot>';
     $('#table' + currentTable.is).append(tableFooter);
@@ -397,5 +402,29 @@ function resetCreateDiv() {
     $('#createNewList').animate({
         height: "200px",
         width: "200px"
+    });
+}
+
+function  deleteList() {
+    var div = $(this).closest('div');
+    console.log(div);    
+    var listToDelete = div.data().id;
+    var nameToDelete= {name: ''}
+    nameToDelete.name = div.data().name
+    console.log('deletList() the listToDelete was', listToDelete,nameToDelete.name) ;
+
+    $.ajax({
+        method: 'DELETE',
+        url: '/allLists/' + listToDelete,
+        success: function(response) {
+            $.ajax({
+                method: 'DELETE',
+                url: '/columnNames/'+listToDelete,
+                data: nameToDelete,
+                success: function(response) {
+                    getAllLists()
+                }
+            });
+        }
     });
 }

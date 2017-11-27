@@ -44,5 +44,32 @@ router.post('/currentTable', function(req,res) {
     res.sendStatus(200);
 });
 
+router.delete('/:id', function (req, res) {
+    var listNameToDelete = req.body.name;
+    console.log('in router.delete')
+    // Attempt to connect to database
+    pool.connect(function (errorConnectingToDatabase, client, done) {
+        if (errorConnectingToDatabase) {
+            // There was an error connecting to the database
+            console.log('Error connecting to database', errorConnectingToDatabase);
+            res.sendStatus(500);
+        } else {
+            // We connected to the database!!!
+            // Now, we're going to GET things from thd DB
+            client.query(`DROP TABLE ${listNameToDelete};`, function (errorMakingQuery, result) {
+                done();
+                if (errorMakingQuery) {
+                    // Query failed. Did you test it in Postico?
+                    // Log the error
+                    console.log('Error making query', errorMakingQuery);
+                    res.sendStatus(500);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
+        }
+    });
+});
+
 module.exports = router;
 
