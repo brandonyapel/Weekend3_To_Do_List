@@ -16,13 +16,16 @@ function readyNow() {
     $('main').on('click', '.addListItemButton', addListItem);
     $('main').on('click', '.insertListItem', insertListItem);
     $('main').on('click', '.cancelListItem', cancelListItem);
-    $('main').on('click', '.submitChecks', submitChecks)
+
+
+
 };
 
 //global variables for functions
 var currentTable = { is: '', columnNames: [], tableData: [], newItem: [] };
 var checkbox;
 var deleteButton;
+var lineItem = {completionStatus: ''}
 
 
 
@@ -153,7 +156,11 @@ function appendTableTooListDiv() {
         var tbodyAppendItem = '';
         tbodyAppendItem += '<tr id = "tr' + currentTable.is + currentTable.tableData[trIndex].id + '"></tr>';
         $('#tbody' + currentTable.is).append(tbodyAppendItem);
-        checkbox = '<td><input class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
+        if(currentTable.tableData[trIndex].completion_status=='n'){
+            checkbox = '<td><input data-id="'+currentTable.tableData[trIndex].id+'" class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
+        }else if(currentTable.tableData[trIndex].completion_status=='y'){
+            checkbox = '<td><input checked data-id="'+currentTable.tableData[trIndex].id+'" class = "checkBox" id="checkBox' + currentTable.is + currentTable.tableData[trIndex].id + '" type="checkbox"></td>'
+        }
         $('#tr' + currentTable.is + currentTable.tableData[trIndex].id).append(checkbox)
         for (let columnNameIndex = 2; columnNameIndex < currentTable.columnNames.length; columnNameIndex++) {
             var currentColumn = currentTable.columnNames[columnNameIndex];
@@ -172,12 +179,12 @@ function appendTableTooListDiv() {
     tableFooter += '<tr>';
     tableFooter += '<td colspan="' + columnSpan + '">';
     tableFooter += '<button class = "addListItemButton" id = "addItem' + currentTable.is + '">add to list</button>'
-    tableFooter += '<button class = "submitChecks">submit checks</button>';
     tableFooter += '<button>delete list</button>';
     tableFooter += '<button>minimize list</button></td>';
     tableFooter += '</tr>';
     tableFooter += '<tfoot>';
     $('#table' + currentTable.is).append(tableFooter);
+    submitChecks();  
 };
 
 function refreshBoxes() {
@@ -257,6 +264,41 @@ function cancelListItem () {
 };
 
 function submitChecks () {
-    console.log('submitChecks()');
-
+    
+    $('input[type="checkbox"]').click(function(){
+        if($(this).is(":checked")){
+            alert("Checkbox is checked.");
+            console.log($(this).data()); 
+            var itemIDToCheck = $(this).data().id;
+            console.log('Check Box Checked! The item id was', itemIDToCheck);
+            lineItem.completionStatus = 'y'
+            $.ajax({
+                method: 'PUT',
+                url: '/list/' + itemIDToCheck,
+                data: lineItem,
+                success: function (response) {
+                    cancelListItem();
+                }
+            })
+        
+        }
+        else if($(this).is(":not(:checked)")){
+            alert("Checkbox is unchecked.");
+            console.log($(this).data()); 
+            var itemIDToCheck = $(this).data().id;
+            console.log('Check Box Checked! The item id was', itemIDToCheck);
+            lineItem.completionStatus = 'n'
+            $.ajax({
+                method: 'PUT',
+                url: '/list/' + itemIDToCheck,
+                data: lineItem,
+                success: function (response) {
+                    cancelListItem();
+                }
+            })
+        }
+    });
 };
+
+
+    
