@@ -26,7 +26,7 @@ var currentTable = { is: '', columnNames: [], tableData: [], newItem: [] };
 var checkbox;
 var deleteButton;
 var lineItem = { completionStatus: '' };
-var newList = {list_name: '',list_background_color: ''};
+var newList = { list_name: '', list_background_color: '' };
 var allLists = [];
 
 
@@ -352,7 +352,7 @@ function createNewList() {
         var createNewListForm = '';
         createNewListForm += '<h4>List Name:</h4>';
         createNewListForm += '<input id=inputNewList type="text" placeholder="New List Name">'
-        createNewListForm +='<p>*lowercase, no spaces, no special characters</p>'
+        createNewListForm += '<p>*lowercase, no spaces, no special characters</p>'
         createNewListForm += '<br>'
         createNewListForm += '<h4>List Color:</h4>';
         createNewListForm += '<select id="selectColor">'
@@ -391,7 +391,7 @@ function submitNewList() {
             });
         }
     });
-    
+
 }
 
 function resetCreateDiv() {
@@ -405,26 +405,28 @@ function resetCreateDiv() {
     });
 }
 
-function  deleteList() {
-    var div = $(this).closest('div');
-    console.log(div);    
-    var listToDelete = div.data().id;
-    var nameToDelete= {name: ''}
-    nameToDelete.name = div.data().name
-    console.log('deletList() the listToDelete was', listToDelete,nameToDelete.name) ;
+function deleteList() {
+    if (confirm('Are your sure you want to delete this list') == true) {
+        var div = $(this).closest('div');
+        console.log(div);
+        var listToDelete = div.data().id;
+        var nameToDelete = { name: '' }
+        nameToDelete.name = div.data().name
+        console.log('deletList() the listToDelete was', listToDelete, nameToDelete.name);
 
-    $.ajax({
-        method: 'DELETE',
-        url: '/allLists/' + listToDelete,
-        success: function(response) {
-            $.ajax({
-                method: 'DELETE',
-                url: '/columnNames/'+listToDelete,
-                data: nameToDelete,
-                success: function(response) {
-                    getAllLists()
-                }
-            });
-        }
-    });
+        $.ajax({
+            method: 'DELETE',
+            url: '/allLists/' + listToDelete,
+            success: function (response) {
+                $.ajax({
+                    method: 'DELETE',
+                    url: '/columnNames/' + listToDelete,
+                    data: nameToDelete,
+                    success: function (response) {
+                        getAllLists()
+                    }
+                });
+            }
+        });
+    }
 }
