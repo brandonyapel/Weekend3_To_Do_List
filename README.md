@@ -30,9 +30,8 @@ Download this project.
 
 ## Screen Shots
 
-![My Projects](./demo-images/My_Projects.png)
-![Advanced Options](./demo-images/Advanced_Options.png)
-![Code Review](./demo-images/Code_Review.png)
+![AddList](./demo-images/AddToList.png)
+![ToDoNote](./demo-images/ToDoNote.png)
 
 ## Documentation
 
@@ -65,16 +64,11 @@ Download this project.
 
 
 ## Deployment
-This project is currently not deployed.  The app runs using a Postgres SQL database.  The database.sql file is currently incomplete since the database.  I intend deploy a live version of this app by May 2018.
+Currently deployed to: https://todo-brandonyapel.herokuapp.com/
 
 ## Author
 
 Brandon Yapel
 
-## Acknowledgements
-
-Thank you to Prime Digital Academy for teaching me how to code in their Full Stack Engineering Bootcamp.  I dreamed up this project for my Individual/Thesis Project for the Bootcamp.  I intend to continue my developing this app and making it available to assist students of Prime to fullfill their dreams of creating full stack apps.
-
-TODO App
 
 
