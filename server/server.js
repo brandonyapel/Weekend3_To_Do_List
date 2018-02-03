@@ -6,7 +6,7 @@ var app = express();
 var bodyParser = require('body-parser');
 
 //sets port to 5000
-var port = 5000;
+var port = process.env.PORT || 5000;
 
 //require in routes
 var allLists = require('./routes/allLists.js');
